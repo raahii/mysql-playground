@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  server:
+    image: mysql:8-debian
+    platform: linux/x86_64 # work around for M1 Mac
+
+    expose:
+      - "3306"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=password"
+    volumes:
+      - ./conf/my.cnf:/etc/my.cnf
+
+  client:
+    image: mysql:8-debian
+    platform: linux/x86_64 # work around for M1 Mac
+    entrypoint: mysql
+    volumes:
+      - ./conf/my.cnf:/etc/my.cnf
