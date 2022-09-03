@@ -49,7 +49,7 @@ mysql-server-1      "docker-entrypoint.s…"   server              running      
 
 
 ## volumes
-- `./sql` will be mounted at `/home/sql`
-- `./conf` will be mounted at `/home/conf`
+- `./sql` will be mounted to `/home/sql`
+- `./conf` will be mounted to `/home/conf`
 - `./data` persist mysql data
 
