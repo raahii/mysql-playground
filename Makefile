@@ -1,8 +1,16 @@
 # Makefile to show operation example
-.PHONY: start-mysql-server start-mysql-prompt
+.PHONY: start, prompt, login
 
-start-mysql-server:
-	docker-compose up -d server
+start:
+	docker-compose up -d
 
-start-mysql-prompt:
-	docker-compose run client -it
+mysql:
+	docker-compose exec server mysql
+
+login:
+	docker-compose exec server bash
+
+stop:
+	docker-compose down --remove-orphans
+
+restart: stop start

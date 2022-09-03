@@ -5,16 +5,26 @@ services:
     image: mysql:8-debian
     platform: linux/x86_64 # work around for M1 Mac
 
+    command: --default-authentication-plugin=mysql_native_password
+    working_dir: /home/sql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_HOME: /home/conf
     expose:
       - "3306"
-    environment:
-      - "MYSQL_ROOT_PASSWORD=password"
     volumes:
-      - ./conf/my.cnf:/etc/my.cnf
+      - "./data:/var/lib/mysql"
+      - "./conf:/home/conf"
+      - "./sql:/home/sql"
 
-  client:
-    image: mysql:8-debian
-    platform: linux/x86_64 # work around for M1 Mac
-    entrypoint: mysql
-    volumes:
-      - ./conf/my.cnf:/etc/my.cnf
+  # client:
+  #   image: mysql:8-debian
+  #   platform: linux/x86_64 # work around for M1 Mac
+
+  #   entrypoint: bash
+  #   tty: true
+  #   working_dir: /home/sql
+  #   volumes:
+  #     - "./conf/my.cnf:/etc/my.cnf"
+  #     - "./sql:/home/sql"

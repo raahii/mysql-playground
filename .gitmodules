@@ -1,0 +1,3 @@
+[submodule "sql/mysql-official-test-db"]
+	path = sql/mysql-official-test-db
+	url = git@github.com:datacharmer/test_db.git
