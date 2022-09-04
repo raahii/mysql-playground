@@ -20,8 +20,8 @@ mysql-server-1      "docker-entrypoint.s…"   server              running      
   ```sh
   $ docker-compose exec server bash
   root@724acd58dccf:/home/sql#
-  root@724acd58dccf:/home/sql# cd mysql-official-test-db/
-  root@724acd58dccf:/home/sql/mysql-official-test-db# mysql < employees.sql
+  root@724acd58dccf:/home/sql# cd 00.mysql_official_sample/init
+  root@724acd58dccf:/home/sql/00.mysql_official_sample/init# mysql < employees.sql
   CREATING DATABASE STRUCTURE
   storage engine: InnoDB
   LOADING departments
