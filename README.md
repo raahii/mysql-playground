@@ -47,6 +47,8 @@ mysql-server-1      "docker-entrypoint.s…"   server              running      
   +----------+
   ```
 
+See Makefile for your information.
+
 
 ## volumes
 - `./sql` will be mounted to `/home/sql`
