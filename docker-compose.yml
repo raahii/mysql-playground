@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  server:
+  db:
     image: mysql:8-debian
     platform: linux/x86_64 # work around for M1 Mac
 
@@ -18,13 +18,11 @@ services:
       - "./conf:/home/conf"
       - "./sql:/home/sql"
 
-  # client:
-  #   image: mysql:8-debian
-  #   platform: linux/x86_64 # work around for M1 Mac
-
-  #   entrypoint: bash
-  #   tty: true
-  #   working_dir: /home/sql
-  #   volumes:
-  #     - "./conf/my.cnf:/etc/my.cnf"
-  #     - "./sql:/home/sql"
+  app:
+    build: ./app
+    volumes:
+      - ./app:/go/src/app
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
