@@ -2,13 +2,41 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
+
+func connectToDatabase() (*sql.DB, error) {
+	db, err := sql.Open("mysql", "root:password@tcp(db:3306)/employees?parseTime=true&loc=Asia%2FTokyo")
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize db connection: %w", err)
+	}
+
+	maxTrials := 10
+	interval := 1 * time.Second
+
+	for i := 0; i < maxTrials; i++ {
+		err = db.Ping()
+		if err != nil {
+			fmt.Printf("failed to ping, retrying... (count: %d, error: %v)\n", i+1, err)
+			time.Sleep(interval)
+		} else {
+			return db, nil
+		}
+	}
+
+	return nil, err
+}
+
+type Handler struct {
+	db *sql.DB
+}
 
 type Employee struct {
 	EmployeeNumber int        `db:"emp_no"`
@@ -19,8 +47,8 @@ type Employee struct {
 	HireDate       *time.Time `db:"hire_date"`
 }
 
-func getRows(db *sql.DB, limit int) ([]*Employee, error) {
-	rows, err := db.Query("SELECT * FROM employees.employees LIMIT ?", limit)
+func (h *Handler) selectRows(limit int) ([]*Employee, error) {
+	rows, err := h.db.Query("SELECT * FROM employees.employees LIMIT ?", limit)
 	if err != nil {
 		return []*Employee{}, fmt.Errorf("getRows db.Query error err: %w", err)
 	}
@@ -50,26 +78,13 @@ func getRows(db *sql.DB, limit int) ([]*Employee, error) {
 	return employees, nil
 }
 
-func connectToDatabase() (*sql.DB, error) {
-	db, err := sql.Open("mysql", "root:password@tcp(db:3306)/employees?parseTime=true&loc=Asia%2FTokyo")
+func (h *Handler) findEmployees(c echo.Context) error {
+	employees, err := h.selectRows(10)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize db connection: %w", err)
+		log.Fatalf("getRows error err:%w", err)
 	}
 
-	maxTrials := 10
-	interval := 1 * time.Second
-
-	for i := 0; i < maxTrials; i++ {
-		err = db.Ping()
-		if err != nil {
-			fmt.Printf("failed to ping, retrying... (count: %d, error: %v)\n", i+1, err)
-			time.Sleep(interval)
-		} else {
-			return db, nil
-		}
-	}
-
-	return nil, err
+	return c.JSON(http.StatusOK, employees)
 }
 
 func main() {
@@ -79,15 +94,13 @@ func main() {
 	}
 	defer db.Close()
 
-	employees, err := getRows(db, 10)
-	if err != nil {
-		log.Fatalf("getRows error err:%w", err)
-	}
+	e := echo.New()
 
-	jsonBytes, err := json.Marshal(employees)
-	if err != nil {
-		log.Fatalf("marshal json error err:%w", err)
-	}
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
-	fmt.Println(string(jsonBytes))
+	h := Handler{db}
+	e.GET("/employees", h.findEmployees)
+
+	e.Logger.Fatal(e.Start(":8080"))
 }
