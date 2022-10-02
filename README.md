@@ -19,7 +19,9 @@ mysql-db-1          "docker-entrypoint.s…"   db                  running      
 
 ## How to use
 
-- set up database with MySQL official example (see [datacharmer/test_db](https://github.com/datacharmer/test_db) for detail)
+This is an example.
+
+1. set up database with MySQL official example (see [datacharmer/test_db](https://github.com/datacharmer/test_db) for detail)
 
   ```sh
   $ docker-compose exec db bash
@@ -37,10 +39,10 @@ mysql-db-1          "docker-entrypoint.s…"   db                  running      
   00:05:03
   ```
 
-- start MySQL console
+2. start MySQL console
 
   ```sh
-  $ docker-compose exec db mysql
+  $ make mysql
   Creating mysql_client_run ... done
   
   root@localhost > select count(*) from employees.employees;
@@ -50,7 +52,6 @@ mysql-db-1          "docker-entrypoint.s…"   db                  running      
   |   300024 |
   +----------+
   ```
-
 
 
 See Makefile for your information.
