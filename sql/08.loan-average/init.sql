@@ -32,7 +32,6 @@ CREATE TABLE
     FOREIGN KEY fk_tid (transaction_id) REFERENCES transaction (id)
   );
 
-----
 INSERT INTO
   account (kind, balance)
 VALUES
